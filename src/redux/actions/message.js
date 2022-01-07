@@ -7,7 +7,7 @@ const setMessage = (message) => {
     }
 }
 const clearMessage = () => {
-    console.log('clear message');
+
     return {
         type: CLEAR_MESSAGE,
         payload: ''

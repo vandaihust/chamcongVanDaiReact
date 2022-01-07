@@ -30,14 +30,14 @@ function SignIn(props) {
     //end style and validate
     //handle Login
 
-    const checkBtn = useRef();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const { isLoggedIn } = useSelector(state => state.auth);
     const { message } = useSelector(state => state.message);
-
+    const [messageFalse, setMessageFalse] = useState('')
+    const [checkAccount, setCheckAccount] = useState(true)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -46,29 +46,39 @@ function SignIn(props) {
 
     const onChangeUsername = (e) => {
         const username = e.target.value;
+        setMessageFalse('')
+        errors.username = false
         setUsername(username);
     };
 
     const onChangePassword = (e) => {
         const password = e.target.value;
+        setMessageFalse('')
+        errors.password = false
         setPassword(password);
     };
     const handleLogin = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         setLoading(true);
-        //kiểm tra button submit có lỗi hay không
-
+        setCheckAccount(true)
         dispatch(login(username, password))
             .then(() => {
-                // props.history.push("/profile");
-                // navigate.navigate('home')
-                // window.location.reload();
+                setLoading(true)
+                setCheckAccount(true)
             })
             .catch(() => {
-                setLoading(false);
+                setLoading(false)
+                setCheckAccount(false)
             });
 
     };
+
+    useEffect(() => {
+        if (checkAccount === false) setMessageFalse('Tài khoản hoặc mật khẩu không chính xác')
+        return () => {
+
+        }
+    }, [checkAccount])
     if (isLoggedIn) {
         return <Navigate to="/admin" />;
     }
@@ -80,10 +90,10 @@ function SignIn(props) {
                     <Avatar className={classes.avatar}><LockOpenOutlined /></Avatar>
                     <h2>Đăng nhập</h2>
                 </Grid>
-                {message && (
-                    <Typography variant="inherit" color="error">{message}</Typography>
+                {messageFalse && (
+                    <Typography variant="inherit" color="error">{messageFalse}</Typography>
                 )}
-                <form onSubmit={handleLogin}>
+                <form >
                     <TextField label='Tài khoản' placeholder='Nhập tài khoản'
                         {...register('username')} error={errors.username ? true : false}
                         margin="normal" fullWidth required
@@ -109,7 +119,7 @@ function SignIn(props) {
                         }
                         label="Nhớ mật khẩu"
                     />
-                    <Button type='submit' variant="contained" className={classes.btn} fullWidth>
+                    <Button type='submit' variant="contained" className={classes.btn} fullWidth onClick={handleSubmit(handleLogin)} >
                         Đăng nhập
                     </Button>
 
@@ -125,7 +135,7 @@ function SignIn(props) {
                     </Link>
                 </Typography>
             </Paper>
-        </Grid>
+        </Grid >
     )
 }
 
